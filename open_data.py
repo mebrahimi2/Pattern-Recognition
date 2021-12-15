@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy as np
 from glob import glob
+import pandas as pd
 
 
 def open_image(directory, output_type=None):
@@ -32,5 +33,25 @@ def open_image(directory, output_type=None):
             band_list.append(bands[key])
         image_array = np.stack(band_list,axis=2)
         return image_array
-    else:
-        return bands
+    return bands
+
+
+def open_csv(file_name, directory = None, output_type = None, y_header = None):
+    """
+    Opens csv file 
+
+    Args:
+        file_name (string): 
+        directory (string, optional): Defaults to None.
+        output_type ([type], optional): If you want the output array to be x and y, please enter output_type = "XY" . Defaults to None.
+        y_header (string, optional): If you selected XY output mode please enter the class header name in this variable. Defaults to None.
+    """
+    if directory:
+        file_path = directory + "/" + file_name + '.csv'
+        df  = pd.read_csv(file_path)
+    if output_type:
+        y = df[y_header].to_numpy()
+        x = df.loc[:, df.columns != y_header].to_numpy()
+        return x, y
+    gtp = df.to_numpy()
+    return gtp
